@@ -25,7 +25,7 @@ def main():
 
     # print(top_ten(alphabet))
 
-def alphabet_freq():
+def alphabet_freq(list_name):
     """
         Returns a dictionary of the alphabet with a frequency for every letter.
     """
@@ -34,18 +34,21 @@ def alphabet_freq():
 
     # Get count of each letter in all valid words.
     for letter in alphabet:
-        count                         = get_letter_frequency(letter)
+        count                         = get_letter_frequency(letter, list_name)
         letter_frequency_dict[letter] = round(count / TOTAL_CHARS, 4)
 
     return letter_frequency_dict
 
-def get_letter_frequency (letter):
+def get_letter_frequency (letter, list_name):
     """
-        Get the frequency of a given letter across all valid words.
+        Get the frequency of a given letter across all words in a list.
     """
-    with open("student_project_resources/wordle_valid_words.txt", 'r') as file:
-        text = file.read()
-        total = text.count(letter)
+    long_str = ""
+    
+    for word in list_name:
+        long_str = long_str + word
+
+    total = long_str.count(letter)
 
     return total
 

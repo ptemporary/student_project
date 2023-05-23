@@ -20,7 +20,8 @@ class Machine_Guess:
         A class specifically designed to handle automated input (word guesses) 
         from another program.from random import choice
     """
-    guess_no = 0
+    guess_no = 2
+    feedback = "_____"
 
     def valid_word(self, input):
         """
@@ -47,7 +48,7 @@ class Machine_Guess:
 
         return is_valid
 
-    def new_word(self, guess_no):
+    def new_word(self):
         """
             Gets user input.  Enforces input to be 5 letters long, composed of 
             only letters, and must be in either the common/valid words list.
