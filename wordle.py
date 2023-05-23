@@ -8,6 +8,7 @@ from random import choice
 import helpers
 import generator
 import argparse
+import frequency
 
 MAX_GUESSES = 6
 COMPUTER_FIRST_GUESS = "AEROS"
@@ -27,6 +28,10 @@ def get_master_list():
     master_list = open('student_project_resources/wordle_valid_words.txt', 'r').read().upper().split('\n')
     master_list += open('student_project_resources/wordle_common_words.txt', 'r').read().split('\n') * 10
     return master_list
+
+def get_beginning_filtered_list():
+    filtered_list = open('student_project_resources/wordle_valid_words.txt', 'r').read().upper().split('\n')
+    return filtered_list
 
 
 def choose_target_word(master_list):
@@ -71,28 +76,82 @@ class Wordle:
 
             if (not solved) and (MAX_GUESSES == guess_no):
                 print(f'You failed to guess the word: #{self.solution} womp womp')
+
+
+
+
+
+
+        #give first guess
+        #if solution == first guess
+        #done!
+        #else enter loop
+        #receive feedback
+        #filter the filtered master list
+        #generate next best word
+        #use as next guess
         elif automated == True:
-            print('automatic game!!!')
 
             player = generator.Machine_Guess()
+            filtered_list = get_beginning_filtered_list()
+            print('Machines first guess: ', COMPUTER_FIRST_GUESS)
+            ####print(filtered_list)
+            complete_feedback = {'' : ''}
+            single_feedback = ''
 
-            while MAX_GUESSES > guess_no:
-                print(f"Guess #{guess_no}/{MAX_GUESSES}:", end=" ")
-                guess = player.new_word()
+            guess_no = 1
+            solved = False
 
-                if self.solution == guess:
+            ##give first guess
+            if player.guess_no == 1:
+                if self.solution == COMPUTER_FIRST_GUESS:
+                    print('Solved first try!')
+                    complete_feedback.update({COMPUTER_FIRST_GUESS : single_feedback})
                     solved = True
-                    print("You found the solution!")
-                    break
-                elif False == player.valid_word(guess):
-                    continue
                 else:
-                    feedback = helpers.process_guess(self.solution, guess)
-                    print(feedback)
-                    guess_no += 1
+                    complete_feedback.update({COMPUTER_FIRST_GUESS : helpers.process_guess(COMPUTER_FIRST_GUESS)})
+                    filtered_list = filter_list_w_feedback(filtered_list, single_feedback)
+                    
+                while MAX_GUESSES > player.guess_no and not solved:
+                    filtered_list = filter_list_w_feedback(filtered_list, single_feedback)
 
-            if (not solved) and (MAX_GUESSES == guess_no):
-                print(f'You failed to guess the word: #{self.solution} womp womp')
+            print(complete_feedback)
+            #print(list(complete_feedback[player.guess_no]))
+            #if solution == first guess
+            #done!
+            #else enter loop
+            #receive feedback
+            #filter the filtered master list
+            #generate next best word
+            #use as next guess
+#-----------------------------------------------------------------------------
+            # alphabet_weights = frequency.alphabet_freq()
+            # guess         = frequency.top_word(alphabet_weights)
+
+            # while MAX_GUESSES > player.guess_no:
+            #     print(f"Guess #{guess_no}/{MAX_GUESSES}:", end=" ")
+            #     guess = player.new_word()
+
+            #     if self.solution == guess:
+            #         solved = True
+            #         print("You found the solution!")
+            #         break
+
+            #     elif False == player.valid_word(guess):
+            #         continue
+            #     else:
+            #         player.feedback = helpers.process_guess(self.solution, guess)
+            #         print(feedback)
+            #         player.guess_no += 1
+
+            # if (not solved) and (MAX_GUESSES == guess_no):
+            #     print(f'You failed to guess the word: #{self.solution} womp womp')
+#-----------------------------------------------------------------------------
+
+
+
+
+
         else:
             print('how did you get here ???')
 
