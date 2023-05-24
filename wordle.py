@@ -37,6 +37,21 @@ def get_beginning_filtered_list():
 def choose_target_word(master_list):
     return choice(master_list)
 
+def filter_list_w_feedback(filtered_list, guess, feedback):
+    filter_position = 0
+    for word in filtered_list:
+        if feedback[filter_position] == 'G':
+            if word[filter_position] != guess[filter_position]:
+                filtered_list.remove(word)
+        elif feedback[filter_position] == 'Y':
+            if guess[filter_position] not in word:
+                filtered_list.remove(word)
+        elif feedback[filter_position] == '_':
+            if guess[filter_position] in word:
+                filtered_list.remove(word)
+
+    return filtered_list
+
 
 class Wordle:
     def __init__(self, solution, automated):
@@ -49,6 +64,7 @@ class Wordle:
         """
         guess_no = 1
         solved   = False
+        filtered_list = get_beginning_filtered_list()
 
         print(f"Solution: {self.solution}")
 
@@ -93,62 +109,46 @@ class Wordle:
         elif automated == True:
 
             player = generator.Machine_Guess()
-            filtered_list = get_beginning_filtered_list()
             print('Machines first guess: ', COMPUTER_FIRST_GUESS)
             ####print(filtered_list)
-            complete_feedback = {'' : ''}
+            complete_feedback = {}
             single_feedback = ''
 
             guess_no = 1
             solved = False
 
-            ##give first guess
-            if player.guess_no == 1:
-                if self.solution == COMPUTER_FIRST_GUESS:
-                    print('Solved first try!')
-                    complete_feedback.update({COMPUTER_FIRST_GUESS : single_feedback})
-                    solved = True
+            
+
+            while False == solved and guess_no < MAX_GUESSES:
+
+                print(type(filtered_list))
+                freq_dict = frequency.alphabet_freq(filtered_list)
+
+
+                guess           = frequency.top_word(freq_dict)
+                print(guess)
+                guess_word, weight = guess
+                guess_no        += 1
+                single_feedback = helpers.process_guess(self.solution, guess_word)
+
+                complete_feedback.update({guess : single_feedback})
+
+                # Correct guess.
+                if self.solution == guess:
+                        print(f'Solved in {guess_no} guesses!')
+                        solved = True
+                # Incorrect guess.
                 else:
-                    complete_feedback.update({COMPUTER_FIRST_GUESS : helpers.process_guess(COMPUTER_FIRST_GUESS)})
-                    filtered_list = filter_list_w_feedback(filtered_list, single_feedback)
-                    
-                while MAX_GUESSES > player.guess_no and not solved:
-                    filtered_list = filter_list_w_feedback(filtered_list, single_feedback)
+                    # Chop list according to feedback
+                    filtered_list = filter_list_w_feedback(filtered_list, guess_word, single_feedback)
+            #print(filtered_list)
+                
+            print(len(filtered_list))
+
 
             print(complete_feedback)
-            #print(list(complete_feedback[player.guess_no]))
-            #if solution == first guess
-            #done!
-            #else enter loop
-            #receive feedback
-            #filter the filtered master list
-            #generate next best word
-            #use as next guess
-#-----------------------------------------------------------------------------
-            # alphabet_weights = frequency.alphabet_freq()
-            # guess         = frequency.top_word(alphabet_weights)
 
-            # while MAX_GUESSES > player.guess_no:
-            #     print(f"Guess #{guess_no}/{MAX_GUESSES}:", end=" ")
-            #     guess = player.new_word()
-
-            #     if self.solution == guess:
-            #         solved = True
-            #         print("You found the solution!")
-            #         break
-
-            #     elif False == player.valid_word(guess):
-            #         continue
-            #     else:
-            #         player.feedback = helpers.process_guess(self.solution, guess)
-            #         print(feedback)
-            #         player.guess_no += 1
-
-            # if (not solved) and (MAX_GUESSES == guess_no):
-            #     print(f'You failed to guess the word: #{self.solution} womp womp')
-#-----------------------------------------------------------------------------
-
-
+            
 
 
 
